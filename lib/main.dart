@@ -1,9 +1,9 @@
+import 'package:briqwear/src/feature/auth/presentation/view/auth_screen.dart';
 import 'package:briqwear/src/feature/auth/presentation/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main(List<String> args) {
-  runApp(const
-   Myapp());
+  runApp(const Myapp());
 }
 
 class Myapp extends StatelessWidget {

@@ -1,71 +1,120 @@
-import 'package:briqwear/src/common/bottons.dart';
 import 'package:briqwear/src/common/font_type.dart';
+import 'package:briqwear/src/feature/auth/presentation/view/auth_screen.dart';
 import 'package:flutter/material.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1.5), // start below
+      end: Offset.zero, // move to center
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _controller.forward();
+
+    // Navigate to home after 3 seconds
+    Future.delayed(const Duration(seconds: 5), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (_) =>
+                const AuthScreen()), // replace with your home screen
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("briqWear", style: AppTextStyle.h1),
-              // under details box //
-              SizedBox(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        // decoration: const BoxDecoration(
+        //   gradient: LinearGradient(
+        //     colors: [Colors.black, Colors.grey],
+        //     begin: Alignment.topCenter,
+        //     end: Alignment.bottomCenter,
+        // ),
+        // ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 15.0),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "Your style\nYour ",
-                                style: AppTextStyle.h2),
-                            const TextSpan(
-                              text: "wardrobe",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 30,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                            TextSpan(
-                                text: "\nYour choice", style: AppTextStyle.h2),
-                          ],
-                        ),
+                    Text(
+                      "briqWear",
+                      style: AppTextStyle.h1.copyWith(
+                          color: Colors.black,
+                          fontSize: 33,
+                          fontFamily: "Montserrat",
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -2),
+                    ),
+                    // const SizedBox(height: 12),
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Text(
+                        "Your style. Your wardrobe. Your choice.",
+                        style: AppTextStyle.h5.copyWith(
+                            fontFamily: "Montserrat",
+                            fontSize: 12,
+                            color: Colors.black),
                       ),
                     ),
-                    const SizedBox( 
-                        width: double.infinity,
-                        child: CustomButton(
-                            color: Colors.black, text: "Sign up with Google")),
-                    const SizedBox(
-                        width: double.infinity,
-                        child: CustomButton(
-                          color: Color.fromARGB(255, 194, 194, 194),
-                          text: "I have an account",
-                          textColor: Color.fromARGB(255, 62, 62, 62),
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text(
-                          "The API class handles token storage. Would you like me to modify any specific endpoints or response formats to match your backend exactly",
-                          style: AppTextStyle.h5),
-                    )
                   ],
                 ),
-              )
-            ],
+              ),
+            ),
           ),
         ),
       ),
